@@ -82,7 +82,7 @@ col1, col2 = st.columns([1, 1])
 
 with col1:
 
-    st.subheader("Observationen der numerischen Daten des gesamten DataFrames:")
+    st.subheader("Observationen der gesamten numerischen Daten:")
     with st.expander("Drücken um nähere Analyse zu betrachten!"):
         st.pyplot(sns.lmplot(data=st.session_state.data, x='Kilometerstand', y='Preis', line_kws=dict(color="r"), fit_reg=True))
         st.pyplot(sns.lmplot(data=st.session_state.data, y='Kilometerstand', x='PS', line_kws=dict(color="r"), fit_reg=True))
@@ -115,32 +115,29 @@ with col2:
     for i, (manufacturer, mean_price) in enumerate(sorted_data.items(), start=1):
         st.markdown(f"{i}. {manufacturer}: {mean_price:.2f} €")
     st.pyplot(sns.lmplot(data=st.session_state.data_five, x='Kilometerstand', y='Preis',
-                         fit_reg=True, hue='Hersteller'))
-    st.pyplot(sns.lmplot(data=st.session_state.data_five, x='PS', y='Preis', hue='Hersteller'))
-    st.pyplot(sns.lmplot(data=st.session_state.data_five, x='Jahr', y='Preis', hue='Hersteller'))
+                         fit_reg=True, hue='Hersteller', col='Hersteller'))
+    st.pyplot(sns.lmplot(data=st.session_state.data_five, x='PS', y='Preis', hue='Hersteller', col='Hersteller'))
+    st.pyplot(sns.lmplot(data=st.session_state.data_five, x='Jahr', y='Preis', hue='Hersteller', col='Hersteller'))
 
 
-st.subheader("Modell: Lineare Regression zur Berechnung des Preises")
+    st.subheader("Modell: Lineare Regression zur Berechnung des Preises")
 
-predictions = st.session_state.model.predict(st.session_state.X_test)
-slope, intercept = np.polyfit(st.session_state.y_test, predictions, 1)
-prediction_fig = plt.figure(figsize=(10, 4))
-plt.scatter(st.session_state.y_test, predictions, label='Daten Punkte')
-plt.xlabel("Korrekte Labels")
-plt.ylabel("Predictions")
-plt.plot(st.session_state.y_test, slope * st.session_state.y_test + intercept, color='red', label='Linear Regression Line')
-plt.legend()
-st.pyplot(prediction_fig)
-st.caption("Lineare Regression ist Teil des 'supervised machine learning'. Dabei lernt der Algorithmus wie er Input "
-           "Daten auf ein bestimmtest Ziel zuweist (hier der Preis). Lineare Regression wird zur Vorhersage von "
-           "Kontinuierlichen Zielen (hier der Preis) verwendet indem man die Beziehung zwischen den Inputs und den "
-           "Targets als lineare Gleichung darstellt. Oftmals wird das Modell genutzt um Regressions Analyse und "
-           "Predictive Modelling durchzuführen wo das Ziel ist basierend auf dem Input eine Vorhersage zu erstellen. "
-           "Ein Beispiel hierfür ist die Marktanalyse in der Wirtschaft.")
-
-col1, col2, col3 = st.columns([1, 5, 1])
-
-with col2:
+    with st.expander("Drücken um das Vorhersage Modell anzuzeigen."):
+        predictions = st.session_state.model.predict(st.session_state.X_test)
+        slope, intercept = np.polyfit(st.session_state.y_test, predictions, 1)
+        prediction_fig = plt.figure(figsize=(10, 4))
+        plt.scatter(st.session_state.y_test, predictions, label='Daten Punkte')
+        plt.xlabel("Korrekte Labels")
+        plt.ylabel("Predictions")
+        plt.plot(st.session_state.y_test, slope * st.session_state.y_test + intercept, color='red', label='Linear Regression Line')
+        plt.legend()
+        st.pyplot(prediction_fig)
+        st.caption("Lineare Regression ist Teil des 'supervised machine learning'. Dabei lernt der Algorithmus wie er Input "
+                   "Daten auf ein bestimmtest Ziel zuweist (hier der Preis). Lineare Regression wird zur Vorhersage von "
+                   "Kontinuierlichen Zielen (hier der Preis) verwendet indem man die Beziehung zwischen den Inputs und den "
+                   "Targets als lineare Gleichung darstellt. Oftmals wird das Modell genutzt um Regressions Analyse und "
+                   "Predictive Modelling durchzuführen wo das Ziel ist basierend auf dem Input eine Vorhersage zu erstellen. "
+                   "Ein Beispiel hierfür ist die Marktanalyse in der Wirtschaft.")
 
     st.subheader("Koeffizenz der Labels 'Kilometerstand', 'PS' und 'Jahr':")
     koeffizient = pd.DataFrame(st.session_state.model.coef_, st.session_state.X.columns)
@@ -160,8 +157,9 @@ with col2:
 
     st.write("Je kleiner die Werte der Fehlermetriken sind, desto genauer ist das Modell")
 
-    error_fig = plt.figure(figsize=(10, 4))
-    sns.histplot((st.session_state.y_test - predictions), kde=True)
-    st.pyplot(error_fig)
-    st.markdown("Je näher die Daten einer Normalverteilung ähneln, desto genauer ist das Ergebnis")
+    with st.expander("Drücken um die Fehler anzuzeigen"):
+        error_fig = plt.figure(figsize=(10, 4))
+        sns.histplot((st.session_state.y_test - predictions), kde=True)
+        st.pyplot(error_fig)
+        st.markdown("Je näher die Daten einer Normalverteilung ähneln, desto genauer ist das Ergebnis")
 
