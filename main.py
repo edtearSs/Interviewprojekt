@@ -69,6 +69,15 @@ with col2:
     with st.expander("Drücken um einen Pairplot anzuzeigen!"):
         st.pyplot(sns.pairplot(data=st.session_state.data_num, diag_kind='hist'))
 
+        st.caption("Erste Obversationen:")
+        st.caption("Kilometerstand - Preis: Nicht wirklich korrelierend.")
+        st.caption("Kilometerstand - PS: Je mehr PS das verkaufte Auto hat, desto kleiner ist der Kilometerstand der "
+                   "verkauften Autos.")
+        st.caption("Kilometerstand - Jahr: Je später das Auto verkauft wird, desto kleiner der Kilometerstand. ")
+        st.caption("Preis - PS: Je mehr PS das Auto hat, desto höher ist der Preis. ")
+        st.caption("Preis - Jahr: Je später das Auto verkauft wird, desto größer der Preis.")
+        st.caption("PS - Jahr: Neuere Autos haben durchschnittlich mehr PS")
+
 col1, col2 = st.columns([1, 1])
 
 with col1:
@@ -105,6 +114,11 @@ with col2:
     sorted_data = st.session_state.data_five.groupby(['Hersteller']).Preis.mean().sort_values(ascending=False)
     for i, (manufacturer, mean_price) in enumerate(sorted_data.items(), start=1):
         st.markdown(f"{i}. {manufacturer}: {mean_price:.2f} €")
+    st.pyplot(sns.lmplot(data=st.session_state.data_five, x='Kilometerstand', y='Preis',
+                         fit_reg=True, hue='Hersteller'))
+    st.pyplot(sns.lmplot(data=st.session_state.data_five, x='PS', y='Preis', hue='Hersteller'))
+    st.pyplot(sns.lmplot(data=st.session_state.data_five, x='Jahr', y='Preis', hue='Hersteller'))
+
 
 st.subheader("Modell: Lineare Regression zur Berechnung des Preises")
 
